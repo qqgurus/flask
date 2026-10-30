@@ -1,0 +1,34 @@
+---
+description: Python style for Flask source and tests
+globs: src/**/*.py,tests/**/*.py
+alwaysApply: false
+---
+
+# Python Style
+
+- Start modules with `from __future__ import annotations`.
+- Import `typing` as `t` and use `t.TYPE_CHECKING` for type-only imports.
+- One import per line (ruff isort `force-single-line`).
+- Fully type public APIs; mypy runs in strict mode on `src`.
+- Use modern syntax (`str | None`, `list[str]`), enforced by ruff `UP`.
+
+```python
+# BAD
+from typing import Optional, Any
+def get(key, default: Optional[Any] = None): ...
+
+# GOOD
+from __future__ import annotations
+
+import typing as t
+
+def get(self, key: str, default: t.Any = None) -> t.Any: ...
+```
+
+## Docstrings
+- Sphinx style with `:param name:` and `:return:` fields.
+- Add `.. versionadded:: <next version>` for new APIs (current dev: 3.2).
+
+## Tests
+- Plain pytest functions; use `app` and `client` fixtures from `tests/conftest.py`.
+- Use `tmp_path` and `monkeypatch` instead of touching the real environment.

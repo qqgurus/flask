@@ -1,0 +1,27 @@
+---
+description: Flask repo layout, tooling, and contribution checklist
+alwaysApply: true
+---
+
+# Flask Project Conventions
+
+## Layout
+- Library code lives in `src/flask/`; WSGI-agnostic core is in `src/flask/sansio/`.
+- Tests live in `tests/`; static typing checks live in `tests/type_check/`.
+- Docs are reStructuredText in `docs/`; changelog is `CHANGES.rst`.
+
+## Tooling
+- Python >= 3.11. Use `uv` for environments (`uv run pytest`, `uv run mypy`).
+- Lint/format with ruff via pre-commit: `uv run pre-commit run --all-files`.
+- Full matrix via tox: `uv run tox -e style,typing,docs` and `uv run tox -e py3.13`.
+- pytest treats warnings as errors (`filterwarnings = ["error"]`).
+
+## Every behavior change must include
+1. Tests that fail without the change.
+2. Docs updates in `docs/` and in docstrings.
+3. A `CHANGES.rst` entry linking the issue.
+4. `.. versionadded::` / `.. versionchanged::` notes in affected docstrings.
+
+## Pull requests
+- Never commit to `main`; create a feature branch.
+- Use `.github/pull_request_template.md`; link the issue with `fixes #<n>`.
