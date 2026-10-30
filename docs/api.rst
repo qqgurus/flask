@@ -706,3 +706,5 @@ Command Line Interface
 .. autodata:: run_command
 
 .. autodata:: shell_command
+
+.. autodata:: config_keys_command

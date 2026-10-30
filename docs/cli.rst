@@ -146,6 +146,21 @@ context will be active, and the app instance will be imported. ::
 Use :meth:`~Flask.shell_context_processor` to add other automatic imports.
 
 
+Show Configuration Keys
+-----------------------
+
+The :func:`config-keys <cli.config_keys_command>` command lists the
+configuration keys for the loaded application. It prints key names only,
+not values. ::
+
+    $ flask config-keys
+    Key
+    ---
+    DEBUG
+    SECRET_KEY
+    TESTING
+
+
 .. _dotenv:
 
 Environment Variables From dotenv

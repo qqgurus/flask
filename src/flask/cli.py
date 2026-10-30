@@ -594,6 +594,7 @@ class FlaskGroup(AppGroup):
             self.add_command(run_command)
             self.add_command(shell_command)
             self.add_command(routes_command)
+            self.add_command(config_keys_command)
 
         self._loaded_plugin_commands = False
 
@@ -1097,6 +1098,30 @@ def routes_command(sort: str, all_methods: bool) -> None:
     except ValueError:
         pass
 
+    rows.insert(0, headers)
+    widths = [max(len(row[i]) for row in rows) for i in range(len(headers))]
+    rows.insert(1, ["-" * w for w in widths])
+    template = "  ".join(f"{{{i}:<{w}}}" for i, w in enumerate(widths))
+
+    for row in rows:
+        click.echo(template.format(*row))
+
+
+@click.command("config-keys", short_help="Show the configuration keys for the app.")
+@with_appcontext
+def config_keys_command() -> None:
+    """Show all configuration keys for the application.
+
+    .. versionadded:: 3.2
+    """
+    keys = sorted(current_app.config)
+
+    if not keys:
+        click.echo("No configuration keys were found.")
+        return
+
+    rows = [[key] for key in keys]
+    headers = ["Key"]
     rows.insert(0, headers)
     widths = [max(len(row[i]) for row in rows) for i in range(len(headers))]
     rows.insert(1, ["-" * w for w in widths])

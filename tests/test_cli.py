@@ -17,6 +17,7 @@ from flask import Blueprint
 from flask import current_app
 from flask import Flask
 from flask.cli import AppGroup
+from flask.cli import config_keys_command
 from flask.cli import find_best_app
 from flask.cli import FlaskGroup
 from flask.cli import get_version
@@ -516,6 +517,44 @@ class TestRoutes:
         result = runner.invoke(cli, ["routes"])
         assert result.exit_code == 0
         assert "Host" in result.output
+
+
+class TestConfigKeys:
+    @pytest.fixture
+    def app(self):
+        app = Flask(__name__)
+        app.config["FOO"] = "bar"
+        return app
+
+    @pytest.fixture
+    def invoke(self, app, runner):
+        cli = FlaskGroup(create_app=lambda: app)
+        return partial(runner.invoke, cli)
+
+    def test_simple(self, invoke):
+        result = invoke(["config-keys"])
+        assert result.exit_code == 0
+        lines = result.output.splitlines()
+        assert lines[0].strip() == "Key"
+        assert "DEBUG" in result.output
+        assert "FOO" in result.output
+        assert "bar" not in result.output
+
+    def test_sorted(self, invoke):
+        result = invoke(["config-keys"])
+        keys = [line.strip() for line in result.output.splitlines()[2:]]
+        assert keys == sorted(keys)
+
+    def test_no_keys(self, capsys):
+        app = Flask(__name__)
+
+        with app.app_context():
+            # Context setup reads config keys such as SERVER_NAME, so clear
+            # afterwards and call the command body directly.
+            app.config.clear()
+            config_keys_command.callback.__wrapped__()
+
+        assert "No configuration keys were found." in capsys.readouterr().out
 
 
 def dotenv_not_available():
